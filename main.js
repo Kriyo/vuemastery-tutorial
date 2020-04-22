@@ -29,6 +29,16 @@ Vue.component("product-review", {
           <option>1</option>
         </select>
       </p>
+
+      <p>Would you recommend this product?</p>      
+
+      <label for="Yes">Yes
+        <input type="radio"value="Yes" v-model=recommend>
+      </label>
+
+      <label for="No">No
+        <input type="radio" value="No" v-model=recommend>
+      </label>
           
       <p>
         <input type="submit" value="Submit">  
@@ -40,25 +50,29 @@ Vue.component("product-review", {
       name: null,
       review: null,
       rating: null,
+      recommend: null,
       errors: [],
     };
   },
   methods: {
     onSubmit() {
-      if (this.name && this.review && this.rating) {
+      if (this.name && this.review && this.rating && this.recommend) {
         let productReview = {
           name: this.name,
           rating: this.rating,
           review: this.review,
+          recommend: this.recommend,
         };
         this.name = null;
         this.rating = null;
         this.review = null;
+        this.recommend = null;
         this.$emit("review-submit", productReview);
       } else {
         if (!this.name) this.errors.push("Name is required");
         if (!this.review) this.errors.push("Review is required");
         if (!this.rating) this.errors.push("Rating is required");
+        if (!this.recommend) this.errors.push("Recommend is required");
       }
     },
   },
@@ -125,6 +139,7 @@ Vue.component("product", {
             <p>Name: {{ review.name }}</p>
             <p>Review: {{ review.review }}</p>
             <p>Rating: {{ review.rating }} / 5</p>
+            <p>Recommend: {{ review.recommend }}</p>
           </li>
         </ul>
         <p v-else>There are no reviews yet.</p>
