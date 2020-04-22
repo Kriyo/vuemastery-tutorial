@@ -19,7 +19,7 @@
           <p v-if="inStock">In Stock</p>
           <p v-else :class="{ outOfStock: !inStock }">Out of Stock</p>
 
-          <p v-if="onSale">On Sale!</p>
+          <p v-if="onSale">{{ sale }}</p>
           <a :href="link" target="_blank">More products like this</a>
 
           <ul>

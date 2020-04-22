@@ -14,16 +14,15 @@ var app = new Vue({
         color: "green",
         image: "./assets/vmSocks-green.jpg",
         quantity: 10,
-        sale: false,
       },
       {
         id: 2235,
         color: "blue",
         image: "./assets/vmSocks-blue.jpg",
         quantity: 0,
-        sale: true,
       },
     ],
+    onSale: true,
     sizes: ["xs", "s", "m", "l", "xl", "xxl"],
     cart: 0,
   },
@@ -50,8 +49,11 @@ var app = new Vue({
     inStock() {
       return this.variants[this.selectedVariant].quantity;
     },
-    onSale() {
-      return this.variants[this.selectedVariant].sale;
+    sale() {
+      if (this.onSale) {
+        return this.brand + " " + this.product + " are on sale!";
+      }
+      return this.brand + " " + this.product + " are not on sale";
     },
   },
 });
