@@ -78,7 +78,7 @@ textarea {
   height: 60px;
 }
 
-.tab {
+.tabs {
   margin-left: 20px;
   cursor: pointer;
 }
@@ -86,8 +86,4 @@ textarea {
 .activeTab {
   color: #16c0b0;
   text-decoration: underline;
-}
-
-.outOfStock {
-  text-decoration: line-through;
 }
