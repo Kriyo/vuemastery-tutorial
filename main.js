@@ -1,3 +1,68 @@
+Vue.component("product-review", {
+  template: `
+    <form class="review-form" @submit.prevent="onSubmit">
+
+      <p v-if="errors.length">
+        <b>Please correct the following error(s):</b>
+        <ul>
+          <li v-for='error in errors'>{{ error }}</li>
+        </ul>
+      </p>
+
+      <p>
+        <label for="name">Name:</label>
+        <input id="name" v-model="name" placeholder="name">
+      </p>
+      
+      <p>
+        <label for="review">Review:</label>      
+        <textarea id="review" v-model="review"></textarea>
+      </p>
+      
+      <p>
+        <label for="rating">Rating:</label>
+        <select id="rating" v-model.number="rating">
+          <option>5</option>
+          <option>4</option>
+          <option>3</option>
+          <option>2</option>
+          <option>1</option>
+        </select>
+      </p>
+          
+      <p>
+        <input type="submit" value="Submit">  
+      </p>
+    </form>
+  `,
+  data() {
+    return {
+      name: null,
+      review: null,
+      rating: null,
+      errors: [],
+    };
+  },
+  methods: {
+    onSubmit() {
+      if (this.name && this.review && this.rating) {
+        let productReview = {
+          name: this.name,
+          rating: this.rating,
+          review: this.review,
+        };
+        this.name = null;
+        this.rating = null;
+        this.review = null;
+        this.$emit("review-submit", productReview);
+      } else {
+        if (!this.name) this.errors.push("Name is required");
+        if (!this.review) this.errors.push("Review is required");
+        if (!this.rating) this.errors.push("Rating is required");
+      }
+    },
+  },
+});
 Vue.component("product-details", {
   props: {
     details: {
@@ -53,6 +118,18 @@ Vue.component("product", {
         <button @click="removeFromCart">Remove from Cart</button>
         
       </div>
+      <div>
+        <h2>Reviews</h2>
+        <ul v-if="reviews.length >= 1">
+          <li v-for='review in reviews'>
+            <p>Name: {{ review.name }}</p>
+            <p>Review: {{ review.review }}</p>
+            <p>Rating: {{ review.rating }} / 5</p>
+          </li>
+        </ul>
+        <p v-else>There are no reviews yet.</p>
+      </div>
+      <product-review @review-submit='addReview'></product-review>
     </div>
   `,
   data() {
@@ -80,17 +157,21 @@ Vue.component("product", {
       ],
       onSale: true,
       sizes: ["xs", "s", "m", "l", "xl", "xxl"],
+      reviews: [],
     };
   },
   methods: {
-    addToCart: function () {
+    addToCart() {
       this.$emit("add-to-cart", this.variants[this.selectedVariant].id);
     },
-    removeFromCart: function () {
+    removeFromCart() {
       this.$emit("remove-from-cart", this.variants[this.selectedVariant].id);
     },
-    updateProduct: function (idx) {
+    updateProduct(idx) {
       this.selectedVariant = idx;
+    },
+    addReview(review) {
+      this.reviews.push(review);
     },
   },
   computed: {
