@@ -1,3 +1,46 @@
+var eventBus = new Vue();
+
+Vue.component("product-tabs", {
+  props: {
+    reviews: {
+      type: Array,
+      required: true,
+    },
+  },
+  template: `
+    <div>
+      <span class='tab'
+            :class="{ activeTab: selectedTab === tab }"
+            v-for="(tab, index) in tabs"
+            :key='index'
+            @click='selectedTab = tab'>
+              {{ tab }}
+            </span>
+
+      <div v-show="selectedTab === 'Reviews'">
+        <h2>Reviews</h2>
+        <ul v-if="reviews.length >= 1">
+          <li v-for='review in reviews'>
+            <p>Name: {{ review.name }}</p>
+            <p>Review: {{ review.review }}</p>
+            <p>Rating: {{ review.rating }} / 5</p>
+            <p>Recommend: {{ review.recommend }}</p>
+          </li>
+        </ul>
+          <p v-else>There are no reviews yet.</p>
+        </div>
+
+        <product-review v-show="selectedTab === 'Make a Review'"></product-review>
+    </div>
+  `,
+  data() {
+    return {
+      selectedTab: "Reviews",
+      tabs: ["Reviews", "Make a Review"],
+    };
+  },
+});
+
 Vue.component("product-review", {
   template: `
     <form class="review-form" @submit.prevent="onSubmit">
@@ -67,7 +110,7 @@ Vue.component("product-review", {
         this.rating = null;
         this.review = null;
         this.recommend = null;
-        this.$emit("review-submit", productReview);
+        eventBus.$emit("review-submit", productReview);
       } else {
         if (!this.name) this.errors.push("Name is required");
         if (!this.review) this.errors.push("Review is required");
@@ -132,19 +175,8 @@ Vue.component("product", {
         <button @click="removeFromCart">Remove from Cart</button>
         
       </div>
-      <div>
-        <h2>Reviews</h2>
-        <ul v-if="reviews.length >= 1">
-          <li v-for='review in reviews'>
-            <p>Name: {{ review.name }}</p>
-            <p>Review: {{ review.review }}</p>
-            <p>Rating: {{ review.rating }} / 5</p>
-            <p>Recommend: {{ review.recommend }}</p>
-          </li>
-        </ul>
-        <p v-else>There are no reviews yet.</p>
-      </div>
-      <product-review @review-submit='addReview'></product-review>
+      <product-tabs :reviews="reviews"></product-tabs>
+      
     </div>
   `,
   data() {
@@ -185,9 +217,6 @@ Vue.component("product", {
     updateProduct(idx) {
       this.selectedVariant = idx;
     },
-    addReview(review) {
-      this.reviews.push(review);
-    },
   },
   computed: {
     title() {
@@ -206,6 +235,11 @@ Vue.component("product", {
     shipping() {
       return this.premium ? "Free" : "2.99";
     },
+  },
+  mounted() {
+    eventBus.$on("review-submit", (productReview) => {
+      this.reviews.push(productReview);
+    });
   },
 });
 
